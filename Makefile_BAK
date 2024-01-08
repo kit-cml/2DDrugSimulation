@@ -1,0 +1,119 @@
+BLDIR=/opt/Lib
+PETSC_DIR=$(BLDIR)/petsc-3.1-p8
+PETSC_ARCH=linux-gnu-c-debug
+PETSC_LIB= $(PETSC_DIR)/$(PETSC_ARCH)/lib
+SUNDIALS_DIR=$(BLDIR)/sundials-2.7.0
+SUNDIALS_LIB=$(SUNDIALS_DIR)/lib
+include ${PETSC_DIR}/conf/variables
+####PETSC_LIB=-L/opt/Lib/petsc-3.9.0/linux-gnu-c-debug/lib -L/opt/Lib/sundials-2.7.0/lib -Wl,-rpath,/opt/Lib/petsc-3.9.0/linux-gnu-c-debug/lib -L/usr/local/lib -L/opt/Lib/openmpi-2.1.3/lib -Wl,-rpath,/usr/local/lib -Wl,-rpath,/opt/Lib/openmpi-2.1.3/lib -lpetsc -lsundials_cvode -lsundials_nvecserial -lsundials_nvecparallel -lf2clapack -lf2cblas -lparmetis -lmetis -lX11 -lstdc++ -ldl -lmpi_usempif08 -lmpi_usempi_ignore_tkr -lmpi_mpifh -lmpi -lifport -lifcore -limf -lsvml -lm -lipgo -lirc -lpthread -lgcc_s -lirc_s -lstdc++ -ldl
+LEX      = flex
+YACC     = yacc
+#CXXFLAGS = -fpermissive -std=c++11
+CXXFLAGS = -fpermissive -std=c++11
+LEXFLAGS =
+YACCFLAGS= -d
+INCPATH  = -I./ -I/ $(PETSC_DIR)/include -I$(SUNDIALS_DIR)/include
+#CLINKER    = /usr/local/bin/mpic++
+PCC	 =  /opt/Lib/openmpi-2.1.3/bin/mpic++
+LFLAGS   =  -pg -static-libstdc++
+#LIBS     = $(PETSC_LIB) -lpetsc  -lz -lm
+LIBS	=  $(PETSC_LIB) -lpetsc -lz -lm
+
+
+AR       = ar cqs
+RANLIB   =
+TAR      = tar -cf
+GZIP     = gzip -9f
+COPY     = cp -f
+COPY_FILE= $(COPY)
+COPY_DIR = $(COPY) -r
+INSTALL_FILE= $(COPY_FILE)
+INSTALL_DIR = $(COPY_DIR)
+DEL_FILE = rm -f
+SYMLINK  = ln -sf
+DEL_DIR  = rmdir
+MOVE     = mv -f
+CHK_DIR_EXISTS= test -d
+MKDIR    = mkdir -p
+
+####### Output directory
+
+OBJECTS_DIR = ./
+
+####### Files
+
+HEADERS := fem.h \
+	  heart.h \
+	  mesh.h \
+		fiber.h \
+		bspm.h \
+    ccalcexception.h \
+    $(wildcard CEP3Cell/cellmodels/*.hpp) \
+    $(wildcard CEP3Cell/mutations/*.hpp) \
+    $(wildcard CEP3Cell/commons/*.hpp) \
+    $(wildcard CEP3Cell/enums/*.hpp)
+
+SOURCES := bench3d.cpp \
+	  fem.cpp \
+	  heart.cpp \
+	  mesh.cpp \
+	  fiber.cpp \
+    bspm.cpp \
+    ccalcexception.cpp \
+    $(wildcard CEP3Cell/cellmodels/*.cpp) \
+    $(wildcard CEP3Cell/mutations/*.cpp)
+
+OBJECTS := $(SOURCES:%.cpp=%.o)
+
+FORMS =
+UICDECLS =
+UICIMPLS =
+SRCMOC   =
+OBJMOC =
+DESTDIR  = 
+TARGET   = ./bin/CEP2
+
+first: all
+####### Implicit rules
+
+.SUFFIXES: .c .o .cpp .cc .cxx .C
+
+.cpp.o:
+	$(PETSC_COMPILE_SINGLE) $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.cc.o:
+	$(PETSC_COMPILE_SINGLE) $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.cxx.o:
+	$(PETSC_COMPILE_SINGLE) $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.C.o:
+	$(PETSC_COMPILE_SINGLE) $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.c.o:
+	$(PETSC_COMPILE_SINGLE) $(CFLAGS) $(INCPATH) -o $@ $<
+
+####### Build rules
+
+all: Makefile $(TARGET)
+
+$(TARGET):  $(OBJECTS)
+	cep2017_heart -d bin/ || mkdir -p ./bin
+	$(info PCC="$(PCC)"  )
+	$(info PETSC_LIB="$(PETSC_LIB)")
+	$(PCC) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
+
+dist:
+	@mkdir -p .tmp/two && $(COPY_FILE) --parents $(SOURCES) $(HEADERS) $(FORMS) $(DIST) .tmp/two/ && ( cd `dirname .tmp/two` && $(TAR) two.tar two && $(GZIP) two.tar ) && $\(MOVE) `dirname .tmp/two`/two.tar.gz . && $(DEL_FILE) -r .tmp/two
+
+
+clean:
+	-$(DEL_FILE) -f *.o
+	-$(DEL_FILE) -f ../CellMLSimulator/*.o
+	-$(DEL_FILE) -f ../CellMLSimulator/**/*.o
+	#-$(DEL_FILE) $(OBJECTS)
+	-$(DEL_FILE) *~ core *.core
+	-$(DEL_FILE) -f *.o
+	#-$(DEL_FILE) -f tn2006 
+	-$(DEL_FILE) -f *.out
+	-$(DEL_FILE) $(TARGET)

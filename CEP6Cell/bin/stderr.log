@@ -1,0 +1,10 @@
+awk: cmd. line:1: fatal: cannot open file `ca_i_result.plt' for reading (No such file or directory)
+./convert-to-edison-format.sh: line 10: ca_i_result.plt: No such file or directory
+head: cannot open `ca_i_result.plt' for reading: No such file or directory
+awk: cmd. line:1: fatal: cannot open file `ca_i_result.plt' for reading (No such file or directory)
+awk: cmd. line:1: fatal: cannot open file `ca_i_result.plt' for reading (No such file or directory)
+awk: cmd. line:1: fatal: cannot open file `vmcheck.plt' for reading (No such file or directory)
+./convert-to-edison-format.sh: line 10: vmcheck.plt: No such file or directory
+head: cannot open `vmcheck.plt' for reading: No such file or directory
+awk: cmd. line:1: fatal: cannot open file `vmcheck.plt' for reading (No such file or directory)
+awk: cmd. line:1: fatal: cannot open file `vmcheck.plt' for reading (No such file or directory)

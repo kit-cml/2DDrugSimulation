@@ -1,0 +1,13 @@
+Input File: input_single.txt
+Variant -- ori
+Simulation_Mode -- 4
+Number_of_Pacing -- 2
+Basic_Cycle_Length -- 1000.000000
+Time_Step -- 0.100000
+Stim_Amplitude -- 1.000000
+Stim_Duration -- 0.500000
+Sample_File -- drugs/bepridil/IC50_samples.csv
+Drug_Name -- bepridil
+Cmax -- 33.000000
+Dosages -- 1,10,20
+Using cell model ORudy2011

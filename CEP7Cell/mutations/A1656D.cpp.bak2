@@ -1,0 +1,81 @@
+#include "A1656D.hpp"
+#include "../enums/enum_tentusscher_noble_noble_panfilov_2004.hpp"
+
+#include <cmath>
+#include <cstring>
+
+A1656D::A1656D( const char* str )
+{
+  if(strncmp(str, "WT", sizeof(str)) == 0) type = 1;
+  else if(strncmp(str, "A1656D", sizeof(str)) == 0) type = 2;
+  else if(strncmp(str, "MEX", sizeof(str)) == 0) type = 3;
+  else if(strncmp(str, "FLE", sizeof(str)) == 0) type = 4;
+  else if(strncmp(str, "RAN", sizeof(str)) == 0) type = 5;
+  else type = 0;
+}
+
+
+void A1656D::mutate(double* ALGEBRAIC, double* STATES, double* CONSTANTS)
+{
+  CONSTANTS[R] = 83140;
+  CONSTANTS[T] = 306.15;
+  CONSTANTS[F] = 96487;
+  const double RT = CONSTANTS[R]*CONSTANTS[T];
+  double mtemp, htemp, jtemp;
+
+  switch (type){
+    case 1:
+      ALGEBRAIC[m_inf] = pow(1.0/(1.0+exp(-(STATES[V]+32.69876)/4.90082)), 1.0/3.0 );
+      ALGEBRAIC[tau_m] = (0.042*exp(pow(-(STATES[V]+25.57)/28.8,2)))+0.024;
+      ALGEBRAIC[h_inf] = 1/(1+exp((STATES[V]+82.05702)/5.58321));
+      ALGEBRAIC[tau_h] = (3.78867/(1+exp((STATES[V]+45)/5.62285)))+0.51125;
+      ALGEBRAIC[j_inf] = ALGEBRAIC[h_inf];
+      ALGEBRAIC[tau_j] = (182.41/(1+exp((STATES[V]+51.01)/3.58)))+3.699;
+      break;
+    case 2: 
+      ALGEBRAIC[m_inf] = pow( 1.0 / (1.0 + exp(-(STATES[V]+39.65516)/4.89371)), 1.0/3.0 );
+      ALGEBRAIC[tau_m] = (0.042*exp(pow(-(STATES[V]+25.57)/28.8,2)))+0.024;
+      ALGEBRAIC[h_inf] = 1/(1+exp((STATES[V]+67.7273)/5.004217));
+      ALGEBRAIC[tau_h] = (4.71448/(1+exp(-(STATES[V]+15.19)/8.12)))+5.2569;
+      ALGEBRAIC[j_inf] = ALGEBRAIC[h_inf];
+      ALGEBRAIC[tau_j] = (37.25868/(1+exp((STATES[V]+38.92)/6.67)))+27.181;
+      break;
+    case 3:
+      ALGEBRAIC[m_inf] = pow( 1.0 / (1.0 + exp(-(STATES[V]+44.9714)/4.08065)), 1.0/3.0 );
+      ALGEBRAIC[tau_m] = (0.042*exp(pow(-(STATES[V]+25.57)/28.8,2)))+0.024;
+      ALGEBRAIC[h_inf] = 1/(1+exp((STATES[V]+67.7273)/5.004217));
+      ALGEBRAIC[tau_h] = (6.13367/(1+exp(-(STATES[V]+0.01)/8.05)))+6.01054;
+      ALGEBRAIC[j_inf] = ALGEBRAIC[h_inf];
+      ALGEBRAIC[tau_j] = (0.81755/(1+exp((STATES[V]+7.569)/6.96)))+14.0;
+      break;
+    case 4:
+      ALGEBRAIC[m_inf] = pow( 1.0 / (1.0 + exp(-(STATES[V]+44.9714)/4.08065)), 1.0/3.0 );
+      ALGEBRAIC[tau_m] = (0.042*exp(pow(-(STATES[V]+25.57)/28.8,2)))+0.024;
+      ALGEBRAIC[h_inf] = 1/(1+exp((STATES[V]+67.7273)/5.004217));
+      ALGEBRAIC[tau_h] = (6.13367/(1+exp(-(STATES[V]+0.01)/8.05)))+6.01054;
+      ALGEBRAIC[j_inf] = ALGEBRAIC[h_inf];
+      ALGEBRAIC[tau_j] = (0.81755/(1+exp((STATES[V]+7.569)/6.96)))+14.0;
+      break;
+    case 5:
+      ALGEBRAIC[m_inf] = pow( 1.0 / (1.0 + exp(-(STATES[V]+45.828)/3.897393)), 1.0/3.0 );
+      ALGEBRAIC[tau_m] = (0.042*exp(pow(-(STATES[V]+25.57)/28.8,2)))+0.024;
+      ALGEBRAIC[h_inf] = 1/(1+exp((STATES[V]+67.0582)/5.65622));
+      ALGEBRAIC[tau_h] = (2.27647/(1+exp(-(STATES[V]+27.66)/3.73)))+5.92341;
+      ALGEBRAIC[j_inf] = ALGEBRAIC[h_inf];
+      ALGEBRAIC[tau_j] = (3.17412/(1+exp((STATES[V]+30.676)/4.074)))+5.0;
+      break;
+    default:
+      break;
+  }
+
+  mtemp = ALGEBRAIC[m_inf]-( ( ALGEBRAIC[m_inf]-STATES[m] )*exp( -0.01/ALGEBRAIC[tau_m] ) ); 
+  htemp = ALGEBRAIC[h_inf]-( ( ALGEBRAIC[h_inf]-STATES[h] )*exp( -0.01/ALGEBRAIC[tau_h] ) ); 
+  jtemp = ALGEBRAIC[j_inf]-( ( ALGEBRAIC[j_inf]-STATES[j] )*exp( -0.01/ALGEBRAIC[tau_j] ) ); 
+
+  ALGEBRAIC[i_Na] = 0.0001*
+                    pow(STATES[m],3)*
+                    ((0.9*STATES[h])+(0.1*STATES[j]))*
+                    STATES[Na_i]*
+                    (STATES[V]*pow(CONSTANTS[F],2)/RT)*
+                    (exp((STATES[V]-ALGEBRAIC[E_Na])*CONSTANTS[F]/RT)-1)/(exp(STATES[V]*CONSTANTS[F]/RT)-1);
+}

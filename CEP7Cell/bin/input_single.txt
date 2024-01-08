@@ -1,0 +1,11 @@
+Variant = ori
+Simulation_Mode = 4
+Number_of_Pacing = 2
+Basic_Cycle_Length = 1000.0
+Time_Step = 0.1
+Stim_Amplitude = 1.0
+Stim_Duration = 0.5
+Sample_File = drugs/bepridil/IC50_samples.csv
+Drug_Name = bepridil
+Cmax = 33
+Dosages = 1,10,20
